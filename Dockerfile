@@ -1,15 +1,20 @@
-FROM nvidia/cuda:12.8.1-runtime-ubuntu22.04
+FROM nvidia/cuda:12.8.1-runtime-ubuntu24.04
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    HF_HOME=/tmp/huggingface
+    HF_HOME=/tmp/huggingface \
+    PATH="/opt/venv/bin:$PATH"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 python3-pip git ca-certificates \
+    python3 python3-venv git ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+RUN python3 -m venv /opt/venv
+
 WORKDIR /app
+
+RUN python3 -c "import sys; assert sys.version_info >= (3, 11); print(sys.version)"
 
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 -m pip install --no-cache-dir \
